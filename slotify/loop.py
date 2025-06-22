@@ -63,7 +63,7 @@ def run_loop(minutes: int = 0, seconds: int = 10, next_days: int | None = None) 
         except Exception as e:
             try:
                 print(f"{type(e).__name__}: {e}")
-                send_markdown(short_exc(e))
+                send_markdown(f"{type(e).__name__}: {e}")
             except Exception as e:
                 print(f"`send_markdown(short_exc(e)` failed: {type(e).__name__}: {e}")
         time.sleep(sleep_duration(minutes, seconds))

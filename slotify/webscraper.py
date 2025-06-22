@@ -1,10 +1,14 @@
+import platform
 import time
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.firefox import GeckoDriverManager
 
 
 def search_slot() -> str:
@@ -40,10 +44,13 @@ def firefox(
     *,
     remote_url: str = "http://localhost:4444/wd/hub",  # TODO
 ) -> str:
-    opts = webdriver.FirefoxOptions()
-    opts.add_argument("--headless")  # harmless in the container, useful locally
+    options = Options()
+    options.add_argument("--headless")
+    service = None
+    if platform.system() not in {"Windows", "Darwin"}:
+        service = Service(GeckoDriverManager().install())
 
-    with webdriver.Firefox(options=opts) as drv:
+    with webdriver.Firefox(options=options, service=service) as drv:
         drv.get(url)
         for mark in elements:
             btn = WebDriverWait(drv, 10).until(EC.element_to_be_clickable(mark))

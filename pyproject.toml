@@ -24,6 +24,7 @@ dependencies = [
   "python-dotenv>=1.1,<2",
   "requests>=2.32.4,<3",
   "selenium>=4.33,<5",
+  "webdriver-manager>=4.0.2,<5",
 ]
 scripts.slotify = "slotify.__main__:main"
 packages = [ { include = "slotify" } ]
