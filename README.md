@@ -20,6 +20,25 @@ pip install -e .
 
 ---
 
+## Configuration
+
+Slotify needs two parameters to authenticate against Telegram.
+Create a `.env` File with key value pairs like in this [sample](.env_sample):
+
+```txt
+BOT_TOKEN=TODO
+CHAT_ID=TODO
+```
+
+Alternatively, you can export the variables directly in your shell:
+
+```bash
+export BOT_TOKEN=TODO
+export CHAT_ID=TODO
+```
+
+---
+
 ## Usage
 
 After installation, you can run the tool directly from the command line:
