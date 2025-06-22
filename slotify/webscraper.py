@@ -48,6 +48,7 @@ def firefox(
     options.add_argument("--headless")
     service = None
     if platform.system() not in {"Windows", "Darwin"}:
+        options.binary_location = "usr/bin/firefox"
         service = Service("usr/local/bin/geckodriver")
 
     with webdriver.Firefox(options=options, service=service) as drv:
