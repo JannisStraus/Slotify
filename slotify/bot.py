@@ -9,7 +9,7 @@ CHAT_ID = os.environ["CHAT_ID"]
 CACHE_FILE = Path.cwd() / "data" / "cache.pickle"
 
 
-def send(slots: dict[str, list[str]]) -> None:
+def send_slots(slots: dict[str, list[str]]) -> None:
     if not slots:
         return
 
@@ -20,7 +20,7 @@ def send(slots: dict[str, list[str]]) -> None:
 
     save_cache(slots)
     text = to_markdown(slots)
-    _send(text)
+    send_markdown(text)
 
 
 def to_markdown(slots: dict[str, list[str]]) -> str:
@@ -32,7 +32,7 @@ def to_markdown(slots: dict[str, list[str]]) -> str:
     return "\n\n".join(blocks)
 
 
-def _send(text: str) -> None:
+def send_markdown(text: str) -> None:
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"}
     r = requests.post(url, json=payload, timeout=10)

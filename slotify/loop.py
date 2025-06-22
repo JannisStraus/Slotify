@@ -1,26 +1,28 @@
+import html
 import time
+import traceback
 from datetime import datetime
 
-from slotify.bot import send
+from slotify.bot import send_markdown, send_slots
 from slotify.parser import parse_agenda
 from slotify.webscraper import search_slot
 
 
-def sleep_duration(period_minutes: int = 0, period_seconds: int = 10) -> float:
+def sleep_duration(minutes: int = 0, seconds: int = 10) -> float:
     """
     Calculate the sleep duration until the next multiple of the specified period.
 
     The period is defined by a combination of minutes and seconds.
-    For example, with period_minutes=0 and period_seconds=10, the function waits until the next 10-second mark.
+    For example, with minutes=0 and seconds=10, the function waits until the next 10-second mark.
 
     Args:
-        period_minutes (int): Number of minutes in the period.
-        period_seconds (int): Number of seconds in the period.
+        minutes (int): Number of minutes in the period.
+        seconds (int): Number of seconds in the period.
 
     Returns:
         float: The number of seconds to sleep.
     """
-    total_period = period_minutes * 60 + period_seconds
+    total_period = minutes * 60 + seconds
     if total_period <= 0:
         raise ValueError("The total period must be greater than zero.")
 
@@ -36,9 +38,32 @@ def sleep_duration(period_minutes: int = 0, period_seconds: int = 10) -> float:
     return sleep_time
 
 
-def run_loop() -> None:
+def short_exc(e: BaseException, frames: int = 1) -> str:
+    """
+    Return a compact markdown block with the exception type, message
+    and the last `frames` stack frames.
+    """
+    head = f"*{e.__class__.__name__}*: {html.escape(str(e))}"
+
+    tb = traceback.extract_tb(e.__traceback__)
+    last_frames = tb[-frames:]
+    stack = "\n".join(
+        f"`{f.filename}:{f.lineno}` - {f.name} ➜ {(f.line or 'Empty').strip()}"
+        for f in last_frames
+    )
+    return f"{head}\n{stack}"
+
+
+def run_loop(minutes: int = 0, seconds: int = 10, next_days: int | None = None) -> None:
     while True:
-        time.sleep(sleep_duration(5, 0))
-        html = search_slot()
-        slots = parse_agenda(html, 10)
-        send(slots)
+        try:
+            html = search_slot()
+            slots = parse_agenda(html, next_days)
+            send_slots(slots)
+        except Exception as e:
+            try:
+                print(f"{type(e).__name__}: {e}")
+                send_markdown(short_exc(e))
+            except Exception as e:
+                print(f"`send_markdown(short_exc(e)` failed: {type(e).__name__}: {e}")
+        time.sleep(sleep_duration(minutes, seconds))

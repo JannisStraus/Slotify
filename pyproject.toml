@@ -6,7 +6,7 @@ requires = [ "poetry-core>=2,<3" ]
 [project]
 name = "slotify"
 version = "0.1.0"
-description = ""
+description = "Slotify is a Python project designed to continuously search for available slots at Morante Hair Salon and send them via Telegram to you mobile device."
 readme = "README.md"
 authors = [
   { name = "Jannis Straus", email = "jannisstraus1408@gmail.com" },
@@ -25,9 +25,12 @@ dependencies = [
   "requests>=2.32.4,<3",
   "selenium>=4.33,<5",
 ]
+scripts.slotify = "slotify.__main__:main"
+packages = [ { include = "slotify" } ]
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
+poetry-plugin-export = "^1.9.0"
 
 [tool.ruff]
 target-version = "py310"
