@@ -1,8 +1,8 @@
 # Slotify
 
-Slotify is a Python project designed to continuously
-search for available slots at Morante Hair Salon and
-send them via Telegram to you mobile device.
+Slotify is a Python project designed to continuously search for available slots
+at Morante Hair Salon or Wellnest and send them via Telegram to you mobile
+device.
 
 ---
 
