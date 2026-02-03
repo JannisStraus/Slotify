@@ -2,13 +2,14 @@ import html
 import time
 import traceback
 from datetime import datetime
+from typing import Callable, TypeVar
 
-from slotify.bot import send_markdown, send_slots
-from slotify.parser import parse_agenda
-from slotify.webscraper import search_slot
+from slotify.bot import send_markdown
+
+P = TypeVar("P")
 
 
-def sleep_duration(minutes: int = 0, seconds: int = 10) -> float:
+def sleep_duration(minutes: int = 10, seconds: int = 0) -> float:
     """
     Calculate the sleep duration until the next multiple of the specified period.
 
@@ -54,16 +55,16 @@ def short_exc(e: BaseException, frames: int = 1) -> str:
     return f"{head}\n{stack}"
 
 
-def run_loop(minutes: int = 0, seconds: int = 10, next_days: int | None = None) -> None:
+def run_loop(minutes: int, func: Callable[[P], str | None], params: P) -> None:
     while True:
         try:
-            html = search_slot()
-            slots = parse_agenda(html, next_days)
-            send_slots(slots)
+            text = func(params)
+            if text:
+                send_markdown(text)
         except Exception as e:
             try:
                 print(f"{type(e).__name__}: {e}")
                 send_markdown(f"{type(e).__name__}: {e}")
             except Exception as e:
                 print(f"`send_markdown(short_exc(e)` failed: {type(e).__name__}: {e}")
-        time.sleep(sleep_duration(minutes, seconds))
+        time.sleep(sleep_duration(minutes))
