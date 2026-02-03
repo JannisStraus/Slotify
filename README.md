@@ -44,22 +44,28 @@ export CHAT_ID=TODO
 After installation, you can run the tool directly from the command line:
 
 ```bash
-slotify -m <minutes> -d <days>
+slotify morante -m <minutes> -d <days>
 ```
 
 or
 
 ```bash
-slotify -s <seconds> -d <days>
+slotify wellnest -m <minutes> -d <date>
 ```
 
 ---
 
 ## Command Line Arguments
 
+### Morante
+
 - `-m`, `--minutes`: *(Optional)* Number of minutes
 to wait between checks (default: 5).
-- `-s`, `--seconds`: *(Optional)* Additional seconds
-to wait between checks (default: 0).
-- `-d`, `--days`: *(Optional)* Number of days in advance
+- `-d`, `--days`: Number of days in advance
 for which to search for available slots.
+
+### Wellnest
+
+- `-m`, `--minutes`: *(Optional)* Number of minutes
+to wait between checks (default: 5).
+- `-d`, `--date`: Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.

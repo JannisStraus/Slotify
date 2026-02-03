@@ -22,7 +22,7 @@ def main() -> None:
         "-d",
         "--days",
         type=int,
-        required=False,
+        required=True,
         help="Number of days in advance for which to search for available slots.",
     )
 
@@ -40,7 +40,7 @@ def main() -> None:
         "--date",
         type=str,
         required=True,
-        help="Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots",
+        help="Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
     )
 
     args = parser.parse_args()
