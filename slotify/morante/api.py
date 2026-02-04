@@ -2,7 +2,7 @@ import os
 import re
 from collections import defaultdict
 from functools import lru_cache
-from typing import Any, Final, TypeAlias
+from typing import Any, Final
 from urllib.parse import urljoin
 
 import requests
@@ -19,7 +19,6 @@ HEADERS: Final[dict[str, str]] = {
     "Origin": PHOREST_ORIGIN,
     "Referer": f"{PHOREST_ORIGIN}/",
 }
-Staff: TypeAlias = dict[str, dict[str, str]]
 
 
 @lru_cache(maxsize=1)
@@ -109,7 +108,9 @@ def get_staffs(salon_slug: str) -> dict[str, Any]:
     }
 
 
-def get_services(salon_slug: str, staff: Staff | None = None) -> dict[str, str]:
+def get_services(
+    salon_slug: str, staff: dict[str, Any] | None = None
+) -> dict[str, str]:
     services = api_get(f"https://{salon_slug}.phorest.me/api/services")
     if staff is None:
         return {s["name"]: s["id"] for s in services["services"]}
