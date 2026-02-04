@@ -166,7 +166,7 @@ def choose(title: str, options: dict[str, Any]) -> Any:
         print("Invalid choice, try again.")
 
 
-def slot_available(days: int) -> str | None:
+def get_markdown(days: int) -> str | None:
     # Salon
     salon_slug = os.getenv("MORANTE_SALON_SLUG")
     if not salon_slug:

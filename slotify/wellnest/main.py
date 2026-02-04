@@ -1,9 +1,5 @@
-from slotify.wellnest.api import slot_available
-from slotify.wellnest.parser import parse_date
+from slotify.wellnest.api import get_markdown
 
 
 def main(date: str) -> str | None:
-    date = parse_date(date)
-    if slot_available(date):
-        return f"Slot available at Wellnest on {date}!"
-    return None
+    return get_markdown(date)

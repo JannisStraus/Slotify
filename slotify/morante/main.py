@@ -1,5 +1,5 @@
-from slotify.morante.api import slot_available
+from slotify.morante.api import get_markdown
 
 
 def main(days: int) -> str | None:
-    return slot_available(days)
+    return get_markdown(days)

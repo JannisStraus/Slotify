@@ -62,9 +62,9 @@ def run_loop(minutes: int, func: Callable[[P], str | None], params: P) -> None:
             if text:
                 send_markdown(text)
         except Exception as e:
+            err = f"{type(e).__name__}: {e}"
             try:
-                print(f"{type(e).__name__}: {e}")
-                send_markdown(f"{type(e).__name__}: {e}")
-            except Exception as e:
-                print(f"`send_markdown(short_exc(e)` failed: {type(e).__name__}: {e}")
+                send_markdown(err, True)
+            except Exception as e2:
+                print(f"`send_markdown(short_exc(e)` failed: {type(e2).__name__}: {e2}")
         time.sleep(sleep_duration(minutes))

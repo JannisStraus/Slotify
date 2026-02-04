@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from slotify.bot import escape_md2
+
 CACHE_FILE = Path.cwd() / "data" / "cache.pickle"
 TZ = ZoneInfo("Europe/Berlin")
 
@@ -33,7 +35,9 @@ def save_cache(slots: dict[str, list[str]]) -> None:
 
 
 def to_markdown(slots: dict[str, list[str]]) -> str:
-    return "\n".join([f"*{k}*\n{', '.join(v)}" for k, v in slots.items()])
+    header = "*Morante*\n"
+    body = "\n".join([f"*{escape_md2(k)}:*\n{', '.join(v)}" for k, v in slots.items()])
+    return header + body
 
 
 def days_to_datetime(days: int) -> tuple[str, str]:
