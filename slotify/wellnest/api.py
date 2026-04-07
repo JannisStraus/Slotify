@@ -7,7 +7,7 @@ from slotify.wellnest.parser import parse_date, to_markdown
 #         "https://wmi.wellnest.me/api/v1/slot-ranges/ess1?"
 #         f"date_start={date}&date_end={date}&disability_friendly_nest_required=false"
 #     )
-#     response = requests.get(url)
+#     response = requests.get(url, timeout=10.0)
 #     response.raise_for_status()
 #     msg = response.json()["message"]
 #     return str(msg[date]) == ">=1"
@@ -18,7 +18,7 @@ def get_slots(date: str) -> dict[str, list[str]] | None:
         "https://wmi.wellnest.me/api/v1/day-slots/ess1?"
         f"date={date}&disability_friendly_nest_required=false"
     )
-    response = requests.get(url)
+    response = requests.get(url, timeout=10.0)
     response.raise_for_status()
     msg = response.json()["message"]
     if not msg:

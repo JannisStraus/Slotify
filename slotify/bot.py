@@ -29,11 +29,16 @@ def send_markdown(text: str, error: bool = False) -> None:
         text = escape_md2(text, True)
     payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "MarkdownV2"}
 
-    r = requests.post(url, json=payload)
-    if r.status_code == 400:
-        payload["text"] = (
-            "HTTPError: 400 Client Error\n"
-            f"URL: {escape_md2(url, True)}\n```Message:\n{escape_md2(text, False)}```"
-        )
-        r = requests.post(url, json=payload)
-    r.raise_for_status()
+    r = requests.post(url, json=payload, timeout=10.0)
+    try:
+        r.raise_for_status()
+    except requests.HTTPError:
+        if r.status_code == 400:
+            payload["text"] = (
+                "HTTPError: 400 Client Error\n"
+                f"URL: {escape_md2(url, True)}\n"
+                f"```Message:\n{escape_md2(text, False)}```"
+            )
+            r = requests.post(url, json=payload, timeout=10.0)
+        else:
+            raise

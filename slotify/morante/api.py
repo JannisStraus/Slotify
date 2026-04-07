@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 
 import requests
 
-from slotify.morante.parser import cached_slots, days_to_datetime, utc_to_local
+from slotify.morante.parser import days_to_datetime, to_markdown, utc_to_local
 
 API_URL: Final = "https://www.phorest.me/api"
 PHOREST_ORIGIN: Final = "https://www.phorest.com"
@@ -201,4 +201,6 @@ def get_markdown(days: int) -> str | None:
         for key, value in non_defaults:
             print(f'{key} = "{value}"')
     slots = get_slots(salon_slug, staff_id, service_id, days)
-    return cached_slots(slots)
+    if not slots:
+        return None
+    return to_markdown(slots)

@@ -1,6 +1,4 @@
-import html
 import time
-import traceback
 from datetime import datetime
 from typing import Callable, TypeVar
 
@@ -39,32 +37,17 @@ def sleep_duration(minutes: int = 10, seconds: int = 0) -> float:
     return sleep_time
 
 
-def short_exc(e: BaseException, frames: int = 1) -> str:
-    """
-    Return a compact markdown block with the exception type, message
-    and the last `frames` stack frames.
-    """
-    head = f"*{e.__class__.__name__}*: {html.escape(str(e))}"
-
-    tb = traceback.extract_tb(e.__traceback__)
-    last_frames = tb[-frames:]
-    stack = "\n".join(
-        f"`{f.filename}:{f.lineno}` - {f.name} ➜ {(f.line or 'Empty').strip()}"
-        for f in last_frames
-    )
-    return f"{head}\n{stack}"
-
-
 def run_loop(minutes: int, func: Callable[[P], str | None], params: P) -> None:
+    previous_text = ""
     while True:
         try:
             text = func(params)
-            if text:
+            if text and text != previous_text:
+                previous_text = text
                 send_markdown(text)
         except Exception as e:
-            err = f"{type(e).__name__}: {e}"
             try:
-                send_markdown(err, True)
+                send_markdown(f"{type(e).__name__}: {e}", True)
             except Exception as e2:
-                print(f"`send_markdown(short_exc(e)` failed: {type(e2).__name__}: {e2}")
+                print(f"`send_markdown(e)` failed: {type(e2).__name__}: {e2}")
         time.sleep(sleep_duration(minutes))

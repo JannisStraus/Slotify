@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -7,34 +6,6 @@ from slotify.bot import escape_md2
 
 CACHE_FILE = Path.cwd() / "data" / "cache.json"
 TZ = ZoneInfo("Europe/Berlin")
-
-
-def cached_slots(slots: dict[str, list[str]]) -> str | None:
-    if not slots:
-        return None
-
-    cache = load_cache()
-
-    if cache["morante"] == slots:
-        return None
-
-    cache["morante"] = slots
-    save_cache(cache)
-    return to_markdown(slots)
-
-
-def load_cache() -> dict[str, dict[str, list[str]]]:
-    if CACHE_FILE.exists():
-        data: dict[str, dict[str, list[str]]] = json.loads(
-            CACHE_FILE.read_text("utf-8")
-        )
-        return data
-    return {}
-
-
-def save_cache(slots: dict[str, dict[str, list[str]]]) -> None:
-    CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    CACHE_FILE.write_text(json.dumps(slots), "utf-8")
 
 
 def to_markdown(slots: dict[str, list[str]]) -> str:
