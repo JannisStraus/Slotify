@@ -193,11 +193,12 @@ def get_markdown(days: int) -> str | None:
         non_defaults.append(("MORANTE_SERVICE_ID", service_id))
         os.environ["MORANTE_SERVICE_ID"] = service_id
 
-    print(
-        "Tip: To reuse the same salon, staff, and service, add the following "
-        "environment variables to your '.env' file:"
-    )
-    for key, value in non_defaults:
-        print(f'{key} = "{value}"')
+    if non_defaults:
+        print(
+            "Tip: To reuse the same salon, staff, and service, add "
+            "the following environment variables to your '.env' file:"
+        )
+        for key, value in non_defaults:
+            print(f'{key} = "{value}"')
     slots = get_slots(salon_slug, staff_id, service_id, days)
     return cached_slots(slots)
