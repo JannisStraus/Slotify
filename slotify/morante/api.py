@@ -158,7 +158,7 @@ def choose(title: str, options: dict[str, Any]) -> Any:
 
     print(f"\n{title}")
     for i, key in enumerate(keys, start=1):
-        print(f"  {i}. {key}")
+        print(f"{i:>2}. {key}")
 
     while True:
         choice = input("Choose number: ").strip()
@@ -168,11 +168,14 @@ def choose(title: str, options: dict[str, Any]) -> Any:
 
 
 def get_markdown(days: int) -> str | None:
+    non_defaults: list[tuple[str, str]] = []
+
     # Salon
     salon_slug = os.getenv("MORANTE_SALON_SLUG")
     if not salon_slug:
         businesses = get_businesses()
         salon_slug = choose("Choose salon", businesses)
+        non_defaults.append(("MORANTE_SALON_SLUG", salon_slug))
         os.environ["MORANTE_SALON_SLUG"] = salon_slug
 
     # Staff
@@ -182,13 +185,19 @@ def get_markdown(days: int) -> str | None:
         staffs = get_staffs(salon_slug)
         staff = choose("Choose staff", staffs)
         staff_id = staff["id"]
-        print(staff_id)
+        non_defaults.append(("MORANTE_STAFF_ID", staff_id))
         os.environ["MORANTE_STAFF_ID"] = staff_id
 
         services = get_services(salon_slug, staff)
         service_id = choose("Choose service", services)
-        print(service_id)
+        non_defaults.append(("MORANTE_SERVICE_ID", service_id))
         os.environ["MORANTE_SERVICE_ID"] = service_id
 
+    print(
+        "Tip: To reuse the same salon, staff, and service, add the following "
+        "environment variables to your '.env' file:"
+    )
+    for key, value in non_defaults:
+        print(f'{key} = "{value}"')
     slots = get_slots(salon_slug, staff_id, service_id, days)
     return cached_slots(slots)
