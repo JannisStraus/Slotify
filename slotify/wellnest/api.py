@@ -1,9 +1,11 @@
-import requests
 import os
 import re
-from slotify.utils import choose
 
-from slotify.wellnest.parser import parse_date, to_markdown
+import requests
+
+from slotify.utils import DateTime, choose, parse_date
+from slotify.wellnest.parser import to_markdown
+
 
 def get_slugs() -> dict[str, str]:
     url = (
@@ -28,10 +30,10 @@ def get_slugs() -> dict[str, str]:
 #     return {str(msg[d]) for d in msg if d == ">=1"}
 
 
-def get_slot_times(date: str, slug: str) -> dict[str, list[str]]:
+def get_slot_times(date: DateTime, slug: str) -> dict[str, list[str]]:
     url = (
         f"https://wmi.wellnest.me/api/v1/day-slots/{slug}?"
-        f"date={date}&disability_friendly_nest_required=false"
+        f"date={date.fmt_en()}&disability_friendly_nest_required=false"
     )
     response = requests.get(url, timeout=10.0)
     response.raise_for_status()
@@ -59,8 +61,8 @@ def get_markdown(date: str) -> str | None:
         for key, value in non_defaults:
             print(f'{key}="{value}"')
 
-    date_en, date_de = parse_date(date)
-    slots = get_slot_times(date_en, slug)
+    date_time = parse_date(date)
+    slots = get_slot_times(date_time, slug)
     if not slots:
         return None
-    return to_markdown(date_de, slots)
+    return to_markdown(str(date_time), slots)

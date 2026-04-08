@@ -1,14 +1,15 @@
 import os
 import re
 from collections import defaultdict
+from datetime import datetime
 from functools import lru_cache
 from typing import Any, Final
 from urllib.parse import urljoin
-from slotify.utils import choose
 
 import requests
 
-from slotify.morante.parser import days_to_datetime, to_markdown, utc_to_local
+from slotify.morante.parser import to_markdown
+from slotify.utils import TZ, choose, days_to_datetime
 
 API_URL: Final = "https://www.phorest.me/api"
 PHOREST_ORIGIN: Final = "https://www.phorest.com"
@@ -27,6 +28,11 @@ def get_session() -> requests.Session:
     s = requests.Session()
     s.headers.update(HEADERS)
     return s
+
+
+def utc_to_local(ts: str) -> tuple[str, str]:
+    dt_local = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(TZ)
+    return dt_local.strftime("%d.%m.%y"), dt_local.strftime("%H:%M")
 
 
 def configure_session(session: requests.Session) -> None:

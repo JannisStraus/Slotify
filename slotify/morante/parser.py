@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from slotify.bot import escape_md2

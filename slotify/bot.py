@@ -25,19 +25,19 @@ def escape_md2(text: str, redact: bool = False) -> str:
 
 def send_markdown(text: str, error: bool = False) -> None:
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    if error:
-        text = escape_md2(text, True)
     payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "MarkdownV2"}
-
+    if error:
+        text = escape_md2(text, redact=True)
     r = requests.post(url, json=payload, timeout=10.0)
     try:
         r.raise_for_status()
     except requests.HTTPError:
         if r.status_code == 400:
             payload["text"] = (
-                "HTTPError: 400 Client Error\n"
+                "*HTTPError: 400 Client Error*\n"
                 f"URL: {escape_md2(url, True)}\n"
-                f"```Message:\n{escape_md2(text, False)}```"
+                f"Reason: {escape_md2(r.reason)}\n"
+                f"```Message:\n{_redact(text)}```"
             )
             r = requests.post(url, json=payload, timeout=10.0)
         else:

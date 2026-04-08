@@ -41,16 +41,38 @@ def main() -> None:
         help="Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
     )
 
+    # MyWellness bot
+    wellnest_parser = subparsers.add_parser("mywellness", help="MyWellness bot")
+    wellnest_parser.add_argument(
+        "-m",
+        "--minutes",
+        type=int,
+        default=5,
+        help="Number of minutes to wait between checks (default: 5).",
+    )
+    wellnest_parser.add_argument(
+        "-d",
+        "--date",
+        type=str,
+        required=True,
+        help="Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
+    )
+
     args = parser.parse_args()
 
-    if args.bot == "morante":
-        from slotify.morante.main import main as morante_main  # noqa: PLC0415
+    match args.bot:
+        case "morante":
+            from slotify.morante.main import main as morante_main  # noqa: PLC0415
 
-        run_loop(args.minutes, morante_main, args.days)
-    elif args.bot == "wellnest":
-        from slotify.wellnest.main import main as wellnest_main  # noqa: PLC0415
+            run_loop(args.minutes, morante_main, args.days)
+        case "wellnest":
+            from slotify.wellnest.main import main as wellnest_main  # noqa: PLC0415
 
-        run_loop(args.minutes, wellnest_main, args.date)
+            run_loop(args.minutes, wellnest_main, args.date)
+        case "mywellness":
+            from slotify.mywellness.main import main as mywellness_main  # noqa: PLC0415
+
+            run_loop(args.minutes, mywellness_main, args.date)
 
 
 if __name__ == "__main__":
