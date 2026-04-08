@@ -1,6 +1,7 @@
 import requests
 import os
 import re
+import datetime
 from slotify.utils import choose
 
 from slotify.wellnest.parser import parse_date, to_markdown
@@ -28,17 +29,39 @@ def get_slugs() -> dict[str, str]:
 #     return {str(msg[d]) for d in msg if d == ">=1"}
 
 
-def get_slot_times(date: str, slug: str) -> dict[str, list[str]]:
+def get_slot_times(date: str, min_minutes: int = 120) -> dict[str, tuple[str, str]]:
     url = (
-        f"https://wmi.wellnest.me/api/v1/day-slots/{slug}?"
-        f"date={date}&disability_friendly_nest_required=false"
+        "https://api.sys.mywellness.de/booking/availabilities/startTimes?"
+        f"&minMinutes={min_minutes}&dates[]={date}&outletIds[]=4&suiteTypeIds[]=4"
+        "&suiteTypeIds[]=6&suiteTypeIds[]=8&suiteTypeIds[]=2&suiteTypeIds[]=7&"
+        "suiteTypeIds[]=1"
     )
     response = requests.get(url, timeout=10.0)
     response.raise_for_status()
-    msg = response.json()["message"]
-    if not msg:
+    suites = response.json()["result"][0]["suiteTypes"]
+    # Usually not possible
+    if not suites:
         return {}
-    return {k: list(v.keys()) for k, v in msg.items()}
+    
+    slots: dict[str, tuple[str, str]] = {}
+    for suite in suites:
+        name = suite["name"]
+        price = suite["price"]
+        times = suite["availableStartTimes"]
+        last_time = datetime.time()
+        start_time = datetime.time()
+        end_time = datetime.time()
+        for row in times:
+            hour, minute = row["time"].split(":")
+            cur_time = datetime.time(int(hour), int(minute))
+            if not last_time:
+                last_time = cur_time
+                start_time = cur_time
+                continue
+            if cur_time != last_time + datetime.timedelta(minutes=10):
+                end_time = cur_time
+                slots[]
+
 
 
 def get_markdown(date: str) -> str | None:

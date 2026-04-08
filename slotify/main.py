@@ -1,8 +1,6 @@
 import argparse
 
 from slotify.loop import run_loop
-from slotify.morante.main import main as morante_main
-from slotify.wellnest.main import main as wellnest_main
 
 
 def main() -> None:
@@ -46,8 +44,12 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.bot == "morante":
+        from slotify.morante.main import main as morante_main  # noqa: PLC0415
+
         run_loop(args.minutes, morante_main, args.days)
     elif args.bot == "wellnest":
+        from slotify.wellnest.main import main as wellnest_main  # noqa: PLC0415
+
         run_loop(args.minutes, wellnest_main, args.date)
 
 

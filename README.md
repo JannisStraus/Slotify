@@ -4,8 +4,6 @@ Slotify is a Python project designed to continuously search for available slots
 at Morante Hair Salon or Wellnest and send them via Telegram to you mobile
 device.
 
----
-
 ## Installation
 
 Clone the repository and install the package in editable mode:
@@ -17,8 +15,6 @@ pip install -e .
 ```
 
 *Requires **Python ≥ 3.10***
-
----
 
 ## Configuration
 
@@ -37,8 +33,6 @@ export BOT_TOKEN=TODO
 export CHAT_ID=TODO
 ```
 
----
-
 ## Usage
 
 After installation, you can run the tool directly from the command line:
@@ -52,8 +46,6 @@ or
 ```bash
 slotify wellnest -m <minutes> -d <date>
 ```
-
----
 
 ## Command Line Arguments
 

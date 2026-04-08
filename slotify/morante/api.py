@@ -4,6 +4,7 @@ from collections import defaultdict
 from functools import lru_cache
 from typing import Any, Final
 from urllib.parse import urljoin
+from slotify.utils import choose
 
 import requests
 
@@ -153,20 +154,6 @@ def get_slots(
     return slots_avail
 
 
-def choose(title: str, options: dict[str, Any]) -> Any:
-    keys = list(options.keys())
-
-    print(f"\n{title}")
-    for i, key in enumerate(keys, start=1):
-        print(f"{i:>2}. {key}")
-
-    while True:
-        choice = input("Choose number: ").strip()
-        if choice.isdigit() and 1 <= int(choice) <= len(keys):
-            return options[keys[int(choice) - 1]]
-        print("Invalid choice, try again.")
-
-
 def get_markdown(days: int) -> str | None:
     non_defaults: list[tuple[str, str]] = []
 
@@ -196,10 +183,10 @@ def get_markdown(days: int) -> str | None:
     if non_defaults:
         print(
             "Tip: To reuse the same salon, staff, and service, add "
-            "the following environment variables to your '.env' file:"
+            "the following environment variable(s) to your '.env' file:"
         )
         for key, value in non_defaults:
-            print(f'{key} = "{value}"')
+            print(f'{key}="{value}"')
     slots = get_slots(salon_slug, staff_id, service_id, days)
     if not slots:
         return None
