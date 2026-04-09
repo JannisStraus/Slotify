@@ -5,6 +5,7 @@ import requests
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
 _MD2_SPECIALS = set(r"_*[]()~`>#+-=|{}.!")
+MAX_CHARS_SAFE = 3500
 
 
 def _redact(s: str) -> str:
@@ -25,9 +26,10 @@ def escape_md2(text: str, redact: bool = False) -> str:
 
 def send_markdown(text: str, error: bool = False) -> None:
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "MarkdownV2"}
+    text = text[:MAX_CHARS_SAFE]
     if error:
-        text = escape_md2(text, redact=True)
+        text = f"```{escape_md2(text, redact=True)}```"
+    payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "MarkdownV2"}
     r = requests.post(url, json=payload, timeout=10.0)
     try:
         r.raise_for_status()

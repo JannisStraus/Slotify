@@ -1,4 +1,5 @@
 import time
+import traceback
 from datetime import datetime
 from typing import Callable, TypeVar
 
@@ -45,9 +46,9 @@ def run_loop(minutes: int, func: Callable[[P], str | None], params: P) -> None:
             if text and text != previous_text:
                 previous_text = text
                 send_markdown(text)
-        except Exception as e:
+        except Exception:
             try:
-                send_markdown(f"{type(e).__name__}: {e}", True)
+                send_markdown(traceback.format_exc(), True)
             except Exception as e2:
                 print(f"`send_markdown(e)` failed: {type(e2).__name__}: {e2}")
         time.sleep(sleep_duration(minutes))
