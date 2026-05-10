@@ -40,6 +40,7 @@ def sleep_duration(minutes: int = 10, seconds: int = 0) -> float:
 
 def run_loop(minutes: int, func: Callable[[P], str | None], params: P) -> None:
     previous_text = ""
+    send_markdown("started")
     while True:
         try:
             text = func(params)
