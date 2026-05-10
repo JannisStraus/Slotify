@@ -171,5 +171,4 @@ cython_debug/
 .pypirc
 
 # Custom
-data/
 downloaded_files/

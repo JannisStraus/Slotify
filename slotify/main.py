@@ -1,78 +1,88 @@
 import argparse
+from importlib import import_module
 
 from slotify.loop import run_loop
+
+BOTS = {
+    "morante": {
+        "help": "Morante Hair Salon bot",
+        "arg": (
+            "-d",
+            "--days",
+            {
+                "type": int,
+                "required": True,
+                "help": "Number of days in advance for which to search for available slots.",
+            },
+        ),
+        "module": "slotify.morante.main",
+        "param": "days",
+    },
+    "wellnest": {
+        "help": "Wellnest bot",
+        "arg": (
+            "-d",
+            "--date",
+            {
+                "type": str,
+                "required": True,
+                "help": "Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
+            },
+        ),
+        "module": "slotify.wellnest.main",
+        "param": "date",
+    },
+    "mywellness": {
+        "help": "MyWellness bot",
+        "arg": (
+            "-d",
+            "--date",
+            {
+                "type": str,
+                "required": True,
+                "help": "Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
+            },
+        ),
+        "module": "slotify.mywellness.main",
+        "param": "date",
+    },
+    "justiz": {
+        "help": "Justiz bot",
+        "arg": (
+            "-d",
+            "--date",
+            {
+                "type": str,
+                "required": True,
+                "help": "Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
+            },
+        ),
+        "module": "slotify.justiz.main",
+        "param": "date",
+    },
+}
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Slotify: Search for available slots.")
     subparsers = parser.add_subparsers(dest="bot", required=True, help="Bot to run")
 
-    # Morante bot
-    morante_parser = subparsers.add_parser("morante", help="Morante Hair Salon bot")
-    morante_parser.add_argument(
-        "-m",
-        "--minutes",
-        type=int,
-        default=5,
-        help="Number of minutes to wait between checks (default: 5).",
-    )
-    morante_parser.add_argument(
-        "-d",
-        "--days",
-        type=int,
-        required=True,
-        help="Number of days in advance for which to search for available slots.",
-    )
-
-    # Wellnest bot
-    wellnest_parser = subparsers.add_parser("wellnest", help="Wellnest bot")
-    wellnest_parser.add_argument(
-        "-m",
-        "--minutes",
-        type=int,
-        default=5,
-        help="Number of minutes to wait between checks (default: 5).",
-    )
-    wellnest_parser.add_argument(
-        "-d",
-        "--date",
-        type=str,
-        required=True,
-        help="Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
-    )
-
-    # MyWellness bot
-    wellnest_parser = subparsers.add_parser("mywellness", help="MyWellness bot")
-    wellnest_parser.add_argument(
-        "-m",
-        "--minutes",
-        type=int,
-        default=5,
-        help="Number of minutes to wait between checks (default: 5).",
-    )
-    wellnest_parser.add_argument(
-        "-d",
-        "--date",
-        type=str,
-        required=True,
-        help="Date (DD.MM.YYYY or YYYY-MM-DD) to search for available slots.",
-    )
+    for name, cfg in BOTS.items():
+        sub = subparsers.add_parser(name, help=cfg["help"])
+        sub.add_argument(
+            "-m",
+            "--minutes",
+            type=int,
+            default=5,
+            help="Number of minutes to wait between checks (default: 5).",
+        )
+        flag_short, flag_long, kwargs = cfg["arg"]
+        sub.add_argument(flag_short, flag_long, **kwargs)
 
     args = parser.parse_args()
-
-    match args.bot:
-        case "morante":
-            from slotify.morante.main import main as morante_main  # noqa: PLC0415
-
-            run_loop(args.minutes, morante_main, args.days)
-        case "wellnest":
-            from slotify.wellnest.main import main as wellnest_main  # noqa: PLC0415
-
-            run_loop(args.minutes, wellnest_main, args.date)
-        case "mywellness":
-            from slotify.mywellness.main import main as mywellness_main  # noqa: PLC0415
-
-            run_loop(args.minutes, mywellness_main, args.date)
+    cfg = BOTS[args.bot]
+    bot_main = import_module(cfg["module"]).main
+    run_loop(args.minutes, bot_main, getattr(args, cfg["param"]))
 
 
 if __name__ == "__main__":
