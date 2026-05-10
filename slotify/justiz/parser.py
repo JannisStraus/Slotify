@@ -1,5 +1,3 @@
-from typing import TypedDict
-
 from slotify.bot import escape_md2
 
 
