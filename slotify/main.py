@@ -4,13 +4,6 @@ from importlib import import_module
 
 from slotify.loop import run_loop
 
-DATE_HELP = (
-    "Date(s) to search for available slots. Accepts single dates "
-    "(DD.MM.YYYY or YYYY-MM-DD), comma-separated lists, ranges "
-    "joined by '-', or a combination. "
-    "Example: '2026-05-11,2026-05-13-2026-05-15'."
-)
-
 
 @dataclass(frozen=True)
 class BotConfig:
@@ -42,6 +35,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Slotify: Search for available slots.")
     subparsers = parser.add_subparsers(dest="bot", required=True, help="Bot to run")
 
+    date_help = (
+        "Date(s) to search for available slots. Accepts single dates "
+        "(DD.MM.YYYY or YYYY-MM-DD), comma-separated lists, ranges "
+        "joined by '-', or a combination. "
+        "Example: '2026-05-11,2026-05-13-2026-05-15'."
+    )
+
     for name, cfg in BOTS.items():
         sub = subparsers.add_parser(name, help=cfg.help)
         sub.add_argument(
@@ -56,7 +56,7 @@ def main() -> None:
             "--date",
             type=str,
             required=True,
-            help=DATE_HELP,
+            help=date_help,
         )
 
     args = parser.parse_args()

@@ -1,11 +1,6 @@
-import os
-
 import requests
 
-BOT_TOKEN = os.environ["BOT_TOKEN"]
-CHAT_ID = os.environ["CHAT_ID"]
-_MD2_SPECIALS = set(r"_*[]()~`>#+-=|{}.!")
-MAX_CHARS_SAFE = 3500
+from slotify.config import BOT_TOKEN, CHAT_ID, MAX_CHARS_SAFE, MD2_SPECIALS, TIMEOUT
 
 
 def _redact(s: str) -> str:
@@ -17,7 +12,7 @@ def escape_md2(text: str, redact: bool = False) -> str:
     if redact:
         text = _redact(text)
     for ch in text:
-        if ch in _MD2_SPECIALS:
+        if ch in MD2_SPECIALS:
             out.append(f"\\{ch}")
         else:
             out.append(ch)
@@ -30,7 +25,7 @@ def send_markdown(text: str, error: bool = False) -> None:
     if error:
         text = f"```{escape_md2(text, redact=True)}```"
     payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "MarkdownV2"}
-    r = requests.post(url, json=payload, timeout=10.0)
+    r = requests.post(url, json=payload, timeout=TIMEOUT)
     try:
         r.raise_for_status()
     except requests.HTTPError:
@@ -41,6 +36,6 @@ def send_markdown(text: str, error: bool = False) -> None:
                 f"Reason: {escape_md2(r.reason)}\n"
                 f"```Message:\n{_redact(text)}```"
             )
-            r = requests.post(url, json=payload, timeout=10.0)
+            r = requests.post(url, json=payload, timeout=TIMEOUT)
         else:
             raise

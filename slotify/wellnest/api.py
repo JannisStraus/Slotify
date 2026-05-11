@@ -3,6 +3,7 @@ import re
 
 import requests
 
+from slotify.config import TIMEOUT
 from slotify.utils import DateTime, choose
 from slotify.wellnest.parser import to_markdown
 
@@ -12,7 +13,7 @@ def get_slugs() -> dict[str, str]:
         "https://wellnest.me/wp-content/plugins/"
         "booking-tool-vue/app/js/app.js?ver=1774615677"
     )
-    js = requests.get(url, timeout=10.0).text
+    js = requests.get(url, timeout=TIMEOUT).text
     pattern = r'name:\s*"([^"]+)"[^}]*?slug:\s*"([^"]+)"'
     matches = re.findall(pattern, js)
     slug_to_name = dict(matches)
@@ -24,7 +25,7 @@ def get_slugs() -> dict[str, str]:
 #         f"https://wmi.wellnest.me/api/v1/slot-ranges/ess1?date_start={date_from}"
 #         f"&date_end={date_to}&disability_friendly_nest_required=false"
 #     )
-#     response = requests.get(url, timeout=10.0)
+#     response = requests.get(url, timeout=TIMEOUT)
 #     response.raise_for_status()
 #     msg = response.json()["message"]
 #     return {str(msg[d]) for d in msg if d == ">=1"}
@@ -35,7 +36,7 @@ def get_slot_times(date: DateTime, slug: str) -> dict[str, list[str]]:
         f"https://wmi.wellnest.me/api/v1/day-slots/{slug}?"
         f"date={date.fmt_en()}&disability_friendly_nest_required=false"
     )
-    response = requests.get(url, timeout=10.0)
+    response = requests.get(url, timeout=TIMEOUT)
     response.raise_for_status()
     msg = response.json()["message"]
     if not msg:
