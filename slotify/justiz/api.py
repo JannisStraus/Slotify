@@ -1,7 +1,7 @@
 import requests
 
 from slotify.justiz.parser import to_markdown
-from slotify.utils import DateTime, parse_date
+from slotify.utils import DateTime
 
 
 def get_times(date: DateTime) -> list[dict[str, str]]:
@@ -17,9 +17,8 @@ def get_times(date: DateTime) -> list[dict[str, str]]:
     return times
 
 
-def get_markdown(date: str) -> str | None:
-    date_time = parse_date(date)
-    dates = get_times(date_time)
-    if not dates:
+def get_markdown(date: DateTime) -> str | None:
+    times = get_times(date)
+    if not times:
         return None
-    return to_markdown(str(date_time), dates)
+    return to_markdown(str(date), times)

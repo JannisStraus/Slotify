@@ -1,0 +1,28 @@
+{
+  "availability_slots": [
+    {
+      "client_schedules": [
+        {
+          "service_schedules": [
+            {
+              "alternative_staff_member": false,
+              "start_time": "2026-05-11T06:00:00Z"
+            },
+            {
+              "alternative_staff_member": false,
+              "start_time": "2026-05-11T07:00:00Z"
+            },
+            {
+              "alternative_staff_member": true,
+              "start_time": "2026-05-11T08:00:00Z"
+            },
+            {
+              "alternative_staff_member": false,
+              "start_time": "2026-05-12T12:30:00Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

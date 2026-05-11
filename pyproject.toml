@@ -31,6 +31,7 @@ scripts.slotify = "slotify.main:main"
 [dependency-groups]
 dev = [
   "pre-commit>=4.5.1",
+  "pytest>=9.0.3",
 ]
 
 [tool.hatch]

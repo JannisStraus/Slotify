@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 import requests
 
 from slotify.morante.parser import to_markdown
-from slotify.utils import TZ, choose, days_to_datetime
+from slotify.utils import TZ, DateTime, choose, parse_dates
 
 API_URL: Final = "https://www.phorest.me/api"
 PHOREST_ORIGIN: Final = "https://www.phorest.com"
@@ -32,7 +32,7 @@ def get_session() -> requests.Session:
 
 def utc_to_local(ts: str) -> tuple[str, str]:
     dt_local = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(TZ)
-    return dt_local.strftime("%d.%m.%y"), dt_local.strftime("%H:%M")
+    return dt_local.strftime("%d.%m.%Y"), dt_local.strftime("%H:%M")
 
 
 def configure_session(session: requests.Session) -> None:
@@ -126,13 +126,31 @@ def get_services(
 
 
 def get_slots(
-    salon_slug: str, staff_id: str, service_id: str, days: int
+    salon_slug: str, staff_id: str, service_id: str, dates: list[DateTime]
 ) -> dict[str, list[str]]:
-    start_time, end_time = days_to_datetime(days)
+    sorted_dates = sorted(dates)
+    start_dt = datetime(
+        sorted_dates[0].year,
+        sorted_dates[0].month,
+        sorted_dates[0].day,
+        0,
+        0,
+        0,
+        tzinfo=TZ,
+    )
+    end_dt = datetime(
+        sorted_dates[-1].year,
+        sorted_dates[-1].month,
+        sorted_dates[-1].day,
+        23,
+        59,
+        59,
+        tzinfo=TZ,
+    )
     payload = {
         "availability_requests": {
-            "start_time": start_time,
-            "end_time": end_time,
+            "start_time": start_dt.isoformat(timespec="seconds"),
+            "end_time": end_dt.isoformat(timespec="seconds"),
             "client_service_selections": [
                 {
                     "client_id": "guest_0",
@@ -149,6 +167,7 @@ def get_slots(
     slots = api_post(
         f"https://{salon_slug}.phorest.me/api/availability_requests", payload
     )
+    requested_keys = {str(d) for d in dates}
     slots_avail = defaultdict(list)
     for slot in slots["availability_slots"]:
         for client_schedule in slot["client_schedules"]:
@@ -156,11 +175,12 @@ def get_slots(
                 if sched["alternative_staff_member"]:
                     continue
                 date_str, time_str = utc_to_local(sched["start_time"])
-                slots_avail[date_str].append(time_str)
+                if date_str in requested_keys:
+                    slots_avail[date_str].append(time_str)
     return slots_avail
 
 
-def get_markdown(days: int) -> str | None:
+def get_markdown(date: str) -> str | None:
     non_defaults: list[tuple[str, str]] = []
 
     # Salon
@@ -193,7 +213,7 @@ def get_markdown(days: int) -> str | None:
         )
         for key, value in non_defaults:
             print(f'{key}="{value}"')
-    slots = get_slots(salon_slug, staff_id, service_id, days)
+    slots = get_slots(salon_slug, staff_id, service_id, parse_dates(date))
     if not slots:
         return None
     return to_markdown(slots)

@@ -3,7 +3,7 @@ import re
 
 import requests
 
-from slotify.utils import DateTime, choose, parse_date
+from slotify.utils import DateTime, choose
 from slotify.wellnest.parser import to_markdown
 
 
@@ -43,7 +43,7 @@ def get_slot_times(date: DateTime, slug: str) -> dict[str, list[str]]:
     return {k: list(v.keys()) for k, v in msg.items()}
 
 
-def get_markdown(date: str) -> str | None:
+def get_markdown(date: DateTime) -> str | None:
     non_defaults: list[tuple[str, str]] = []
 
     slug = os.getenv("WELLNEST_SLUG")
@@ -61,8 +61,7 @@ def get_markdown(date: str) -> str | None:
         for key, value in non_defaults:
             print(f'{key}="{value}"')
 
-    date_time = parse_date(date)
-    slots = get_slot_times(date_time, slug)
+    slots = get_slot_times(date, slug)
     if not slots:
         return None
-    return to_markdown(str(date_time), slots)
+    return to_markdown(str(date), slots)
